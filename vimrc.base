@@ -1,0 +1,79 @@
+syntax on                  " Enable syntax highlighting.
+filetype plugin indent on  " Enable file type based indentation.
+
+set autoindent             " Respect indentation when starting a new line.
+set expandtab              " Expand tabs to spaces. Essential in Python.
+set tabstop=2              " Number of spaces tab is counted for.
+set shiftwidth=2           " Number of spaces to use for autoindent.
+
+set backspace=2            " Fix backspace behavior on most terminals.
+
+colorscheme ron
+
+set number
+set title
+set ambiwidth=double
+set smartindent
+set hidden
+set history=50
+set virtualedit=block
+set whichwrap=b,s,[,],<,>
+set backspace=indent,eol,start
+set wildmenu
+
+set ignorecase
+set smartcase
+set wrapscan
+set incsearch
+set hlsearch
+set showmatch matchtime=1
+set laststatus=2
+set showmatch
+set foldmethod=indent
+autocmd BufRead * normal zR
+" set foldcolumn=3  " visualize folding
+
+let NERDTreeShowBookmarks = 1 " NERDTree起動時にブックマークを表示
+
+set clipboard=unnamed,unnamedplus
+
+set directory=$HOME/.vim/swap//
+
+" set undo_options
+set undofile
+
+if !isdirectory(expand("$HOME/.vim/undodir"))
+  call mkdir(expand("$HOME/.vim/undodir"),"p")
+endif
+
+set undodir=$HOME/.vim/undodir
+
+
+" command shortcut
+
+noremap <c-h> <c-w><c-h>
+noremap <c-j> <c-w><c-j>
+noremap <c-k> <c-w><c-k>
+noremap <c-l> <c-w><c-l>
+command! Bd :bp | :sp | :bn | :bd
+
+" plugins
+
+packloadall           " 全てのプラグインをロード
+silent! helptags All  " すべてのプラグイン用にヘルプファイルをロード
+
+" vim-plugでプラグインを管理する
+call plug#begin()
+Plug 'scrooloose/nerdtree'
+Plug 'tpope/vim-vinegar'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'mileszs/ack.vim'
+Plug 'easymotion/vim-easymotion'
+Plug 'junegunn/vim-plug'
+call plug#end()
+
+" vim-plugがまだインストールされていなければインストールする
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https:/raw.github.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
