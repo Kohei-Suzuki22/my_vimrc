@@ -1,3 +1,4 @@
+set tags=tags;             " 親ディレクトリにあるtagsファイルを再帰的に探す
 syntax on                  " Enable syntax highlighting.
 filetype plugin indent on  " Enable file type based indentation.
 
@@ -30,6 +31,11 @@ set showmatch matchtime=1
 set laststatus=2
 set showmatch
 set foldmethod=indent
+set showcmd
+" Powerlineを読み込む
+" python3 from powerline.vim import setup as powerline_setup
+" python3 powerline_setup()
+" python3 del powerline_setup
 autocmd BufRead * normal zR
 " set foldcolumn=3  " visualize folding
 
@@ -48,6 +54,8 @@ endif
 
 set undodir=$HOME/.vim/undodir
 
+" Pythonのファイルを保存するたびにタグファイルを再生成する
+autocmd BufWritePost *.py silent! !ctags -R &
 
 " command shortcut
 
@@ -55,6 +63,13 @@ noremap <c-h> <c-w><c-h>
 noremap <c-j> <c-w><c-j>
 noremap <c-k> <c-w><c-k>
 noremap <c-l> <c-w><c-l>
+noremap <leader>] :YcmCompleter GoTo<cr>
+noremap <f5> :GundoToggle<cr>
+tnoremap <c-j> <c-w><c-j>
+tnoremap <c-k> <c-w><c-k>
+tnoremap <c-l> <c-w><c-l>
+tnoremap <c-h> <c-w><c-h>
+tnoremap <:> <c-w><:>
 command! Bd :bp | :sp | :bn | :bd
 
 " plugins
@@ -63,13 +78,26 @@ packloadall           " 全てのプラグインをロード
 silent! helptags All  " すべてのプラグイン用にヘルプファイルをロード
 
 " vim-plugでプラグインを管理する
+" YouCompleteMeはコンパイルに時間がかかるためタイムアウトを伸ばす
+if has('python3')
+  let g:gundo_prefer_python3 = 1
+endif
+
 call plug#begin()
+let g:plug_timeout = 300
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-vinegar'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'mileszs/ack.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'junegunn/vim-plug'
+Plug 'ycm-core/YouCompleteMe', {'do': './install.py'}
+Plug 'sjl/gundo.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'tpope/vim-dispatch'
+Plug 'janko-m/vim-test'
+Plug 'vim-syntastic/syntastic'
 call plug#end()
 
 " vim-plugがまだインストールされていなければインストールする
@@ -77,3 +105,13 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https:/raw.github.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+
+" syntasticの設定
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:synstastic_always_poplate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_python_pylint_exe = 'pylint3'
